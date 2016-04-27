@@ -33,13 +33,13 @@ public class MyAltimeter extends AppCompatActivity implements SensorEventListene
     private int blue = 0;
     private SensorManager mSensorManager;
     private Sensor mBarometerSensor;
-    private LineChart mLineChart;
-    private ArrayList<Entry> entries;
-    private ArrayList<ILineDataSet> iLineDataSet;
-    private ArrayList<Float> mAltitudeData;
-    private ArrayList<String> mLabels;
-    private LineDataSet mLineDataSet;
-    private LineData mLineData;
+//    private LineChart mLineChart;
+//    private ArrayList<Entry> entries;
+//    private ArrayList<ILineDataSet> iLineDataSet;
+//    private ArrayList<Float> mAltitudeData;
+//    private ArrayList<String> mLabels;
+//    private LineDataSet mLineDataSet;
+//    private LineData mLineData;
     private int indexCounter = 1;
     private long startTimeMs;
 
@@ -52,13 +52,13 @@ public class MyAltimeter extends AppCompatActivity implements SensorEventListene
         get_color_button = (Button) findViewById(R.id.getcolor);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAltimeter = (TextView) findViewById(R.id.altitudeView);
-        mLineChart = (LineChart) findViewById(R.id.chart);
-        entries = new ArrayList<>();
-        mAltitudeData = new ArrayList<>();
-        mLabels = new ArrayList<>();
-        iLineDataSet = new ArrayList<>();
-        mLineDataSet = new LineDataSet(entries, "ALTITUDE");
-        mLineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+//        mLineChart = (LineChart) findViewById(R.id.chart);
+//        entries = new ArrayList<>();
+//        mAltitudeData = new ArrayList<>();
+//        mLabels = new ArrayList<>();
+//        iLineDataSet = new ArrayList<>();
+//        mLineDataSet = new LineDataSet(entries, "ALTITUDE");
+//        mLineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
 
         if (mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE) != null){
             mBarometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
@@ -85,8 +85,8 @@ public class MyAltimeter extends AppCompatActivity implements SensorEventListene
 
             /* Set the line color here */
 
-            mLineDataSet.setColor(Color.rgb(data.getIntExtra("red", red),
-                    data.getIntExtra("green", green), data.getIntExtra("blue", blue)));
+//            mLineDataSet.setColor(Color.rgb(data.getIntExtra("red", red),
+//                    data.getIntExtra("green", green), data.getIntExtra("blue", blue)));
             /*                          */
 
 
@@ -96,17 +96,17 @@ public class MyAltimeter extends AppCompatActivity implements SensorEventListene
     @Override
     public void onSensorChanged(SensorEvent event) {
         float currentPressure = event.values[0];
-        float altitude = mSensorManager.getAltitude(1014.7f, currentPressure) * 3.28084f;
+        float altitude = mSensorManager.getAltitude(1001.7f, currentPressure) * 3.28084f;
         mAltimeter.setText(String.valueOf(altitude));
 
-        entries.add(new Entry(altitude, indexCounter));
-        iLineDataSet.add(0, mLineDataSet);
-        mLabels.add(String.valueOf((System.currentTimeMillis() - startTimeMs) / 1000.0f));
-//        mLabels.add(String.valueOf(indexCounter));
-        mLineData = new LineData(mLabels, iLineDataSet);
-        mLineChart.setData(mLineData);
-        mLineChart.notifyDataSetChanged();
-        mLineChart.invalidate();
+//        entries.add(new Entry(altitude, indexCounter));
+//        iLineDataSet.add(0, mLineDataSet);
+//        mLabels.add(String.valueOf((System.currentTimeMillis() - startTimeMs) / 1000.0f));
+////        mLabels.add(String.valueOf(indexCounter));
+//        mLineData = new LineData(mLabels, iLineDataSet);
+//        mLineChart.setData(mLineData);
+//        mLineChart.notifyDataSetChanged();
+//        mLineChart.invalidate();
         indexCounter++;
 
     }
