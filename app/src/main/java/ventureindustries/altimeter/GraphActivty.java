@@ -26,9 +26,9 @@ public class GraphActivty extends Activity {
     public LineDataSet mLineDataSet;
     public LineData mLineData;
     private Button getColorButton;
-    private int red;
-    private int green;
-    private int blue;
+    private int red = 0;
+    private int green = 0;
+    private int blue = 0;
 
 
     @Override
