@@ -1,8 +1,5 @@
 package ventureindustries.altimeter;
 
-import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -37,7 +34,7 @@ public class MyAltimeter extends AppCompatActivity {
     private TextView readyText;
     private TextView pressureText;
     private static final String DEBUG_TAG = "DEBUGGER MESSAGE:   ";
-    private SensorEventListener mSensorEventListener;
+    private SensorEventListener mBarometerEventListener;
     private SensorManager mSensorManager;
     private Sensor mBarometerSensor;
     public float currentSeaLevelPressure = 0;
@@ -46,19 +43,17 @@ public class MyAltimeter extends AppCompatActivity {
     private boolean pressureIsCurrent = false;
     private Intent graphIntent;
     private Intent heartRateIntent;
-//    private android.support.v4.app.FragmentManager manager;
-//    private android.support.v4.app.FragmentTransaction transaction;
-
-
+    private Intent settingsIntent;
+    private float unit = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_altimeter);
 
-        graphIntent = new Intent(this, GraphActivty.class);
+        graphIntent = new Intent(this, GraphActivity.class);
         heartRateIntent = new Intent(this, HeartRateActivity.class);
-//        manager = getSupportFragmentManager();
+        settingsIntent = new Intent(this, SettingsActivity.class);
 
         startButton = (Button) findViewById(R.id.start_button);
         stopButton = (Button) findViewById(R.id.stop_button);
@@ -72,20 +67,15 @@ public class MyAltimeter extends AppCompatActivity {
         stopButton.setEnabled(false);
         elevations = new ArrayList<>();
 
-//        StartFragment start = new StartFragment();
-//
-//        transaction = manager.beginTransaction();
-//        transaction.add(R.id.fragmentContainer, start);
-//        transaction.commit();
 
         if (mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE) != null){
             mBarometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
             Log.d(DEBUG_TAG, "Barometer found");
-            mSensorEventListener = new SensorEventListener() {
+            mBarometerEventListener = new SensorEventListener() {
                 @Override
                 public void onSensorChanged(SensorEvent event) {
                     if(pressureIsCurrent){
-                        float altitude = mSensorManager.getAltitude(currentSeaLevelPressure, event.values[0]) * 3.28084f;
+                        float altitude = mSensorManager.getAltitude(currentSeaLevelPressure, event.values[0]) * unit;
                         if(recordElevationFlag){
                             elevations.add(altitude);
                         }
@@ -102,6 +92,8 @@ public class MyAltimeter extends AppCompatActivity {
         else {
             Log.d(DEBUG_TAG, "No barometer found");
         }
+
+
 
         getDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,6 +138,30 @@ public class MyAltimeter extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (resultCode == RESULT_OK && requestCode == 0) {
+            Bundle bundle = data.getExtras();
+            boolean isBarometerSelected = bundle.getBooleanArray("settings")[0];
+            boolean isFeetSelected = bundle.getBooleanArray("settings")[1];
+
+            if(isBarometerSelected){
+                mSensorManager.registerListener(mBarometerEventListener, mBarometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+
+                // Stop GPS
+            }else{
+                mSensorManager.unregisterListener(mBarometerEventListener);
+                // Start GPS
+            }
+
+            if(isFeetSelected)
+                unit = 3.28084f;
+            else
+                unit = 1;
+        }
     }
 
     public void getPressureData(){
@@ -202,46 +218,41 @@ public class MyAltimeter extends AppCompatActivity {
     protected void onResume() {
         // Register a listener for the sensor.
         super.onResume();
-        mSensorManager.registerListener(mSensorEventListener, mBarometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(mBarometerEventListener, mBarometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
     protected void onPause() {
         // Be sure to unregister the sensor when the activity pauses.
         super.onPause();
-        mSensorManager.unregisterListener(mSensorEventListener);
+        mSensorManager.unregisterListener(mBarometerEventListener);
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//
-//        getMenuInflater().inflate(R.menu.my_altimeter_actions, menu);
-//
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()) {
-//            case R.id.settings:
-//
-//                Settings settings = new Settings();
-//
-//                transaction = manager.beginTransaction();
-//                transaction.replace(R.id.fragmentContainer, settings);
-//                transaction.addToBackStack("settings");
-//                transaction.commit();
-//
-//
-//                return true;
-//
-//            default:
-//                // If we got here, the user's action was not recognized.
-//                // Invoke the superclass to handle it.
-//                return super.onOptionsItemSelected(item);
-//
-//        }
-//
-//
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.my_altimeter_actions, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.settings:
+
+                startActivityForResult(settingsIntent, 0);
+
+
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
+
+
+    }
 }

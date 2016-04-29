@@ -1,0 +1,81 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ventureindustries.altimeter.SettingsActivity">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Altitude Sensor:"
+        android:id="@+id/altitude"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:paddingLeft="30dp"
+        android:paddingTop="30dp" />
+
+    <RadioButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="GPS"
+        android:id="@+id/gpsId"
+        android:onClick="onRadioButtonClicked"
+        android:layout_below="@+id/altitude"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="46dp"
+        android:checked="false" />
+
+    <RadioButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Barometer"
+        android:id="@+id/baroId"
+        android:onClick="onRadioButtonClicked"
+        android:layout_alignTop="@+id/gpsId"
+        android:layout_toEndOf="@+id/altitude"
+        android:checked="false" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Units:"
+        android:id="@+id/units"
+        android:layout_below="@+id/gpsId"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="50dp"
+        android:paddingLeft="30dp" />
+
+    <RadioButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Feet"
+        android:onClick="onRadioButtonClicked"
+        android:id="@+id/feetId"
+        android:layout_below="@+id/units"
+        android:layout_alignStart="@+id/gpsId"
+        android:checked="false" />
+
+    <RadioButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Meters"
+        android:onClick="onRadioButtonClicked"
+        android:id="@+id/metersId"
+        android:layout_alignTop="@+id/feetId"
+        android:layout_alignStart="@+id/baroId"
+        android:checked="false" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:id="@+id/save_button"
+        android:layout_centerVertical="true"
+        android:layout_alignStart="@+id/metersId" />
+
+
+</RelativeLayout>

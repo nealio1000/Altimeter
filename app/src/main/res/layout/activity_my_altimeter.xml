@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:paddingBottom="@dimen/activity_vertical_margin"
-android:paddingLeft="@dimen/activity_horizontal_margin"
-android:paddingRight="@dimen/activity_horizontal_margin"
-android:paddingTop="@dimen/activity_vertical_margin"
-tools:context="ventureindustries.altimeter.MyAltimeter"
-android:orientation="horizontal">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="ventureindustries.altimeter.MyAltimeter"
+    android:orientation="horizontal">
 
 
     <Button
@@ -38,11 +38,10 @@ android:orientation="horizontal">
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Not Ready"
         android:id="@+id/ready_text"
-        android:layout_above="@+id/start_button"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="51dp"
         android:textColor="#ff0000"
-        android:textSize="60sp" />
+        android:textSize="60sp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true" />
 
     <Button
         android:layout_width="wrap_content"
@@ -50,8 +49,7 @@ android:orientation="horizontal">
         android:text="Get Current Mean Sea Level Pressure"
         android:id="@+id/get_data_button"
         android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/stop_button"
-        android:layout_marginTop="43dp" />
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -80,5 +78,13 @@ android:orientation="horizontal">
         android:id="@+id/heart_rate_button"
         android:layout_alignBottom="@+id/altitudeView"
         android:layout_alignEnd="@+id/altitudeView" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:id="@+id/fragmentContainer"
+        android:layout_marginStart="511dp"
+        android:layout_below="@+id/pressure_text"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>
