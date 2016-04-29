@@ -44,7 +44,7 @@ public class MyAltimeter extends AppCompatActivity {
     private Intent graphIntent;
     private Intent heartRateIntent;
     private Intent settingsIntent;
-    private float unit = 1;
+    private float unit = 3.28084f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +105,7 @@ public class MyAltimeter extends AppCompatActivity {
         startButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
+                elevations.clear();
                 startButton.setEnabled(false);
                 stopButton.setEnabled(true);
                 heartRateButton.setEnabled(false);
