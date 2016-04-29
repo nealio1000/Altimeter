@@ -1,6 +1,8 @@
 package ventureindustries.altimeter;
 
 import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -12,7 +14,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -23,7 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
-public class MyAltimeter extends Activity {
+public class MyAltimeter extends AppCompatActivity {
     private Button startButton;
     private Button stopButton;
     private Button getDataButton;
@@ -32,19 +37,17 @@ public class MyAltimeter extends Activity {
     private TextView readyText;
     private TextView pressureText;
     private static final String DEBUG_TAG = "DEBUGGER MESSAGE:   ";
-    private int red = 0;
-    private int green = 0;
-    private int blue = 0;
     private SensorEventListener mSensorEventListener;
     private SensorManager mSensorManager;
     private Sensor mBarometerSensor;
-    private int indexCounter = 1;
     public float currentSeaLevelPressure = 0;
     public ArrayList<Float> elevations;
     private boolean recordElevationFlag = false;
     private boolean pressureIsCurrent = false;
     private Intent graphIntent;
     private Intent heartRateIntent;
+//    private android.support.v4.app.FragmentManager manager;
+//    private android.support.v4.app.FragmentTransaction transaction;
 
 
 
@@ -55,6 +58,7 @@ public class MyAltimeter extends Activity {
 
         graphIntent = new Intent(this, GraphActivty.class);
         heartRateIntent = new Intent(this, HeartRateActivity.class);
+//        manager = getSupportFragmentManager();
 
         startButton = (Button) findViewById(R.id.start_button);
         stopButton = (Button) findViewById(R.id.stop_button);
@@ -68,6 +72,12 @@ public class MyAltimeter extends Activity {
         stopButton.setEnabled(false);
         elevations = new ArrayList<>();
 
+//        StartFragment start = new StartFragment();
+//
+//        transaction = manager.beginTransaction();
+//        transaction.add(R.id.fragmentContainer, start);
+//        transaction.commit();
+
         if (mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE) != null){
             mBarometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
             Log.d(DEBUG_TAG, "Barometer found");
@@ -78,7 +88,6 @@ public class MyAltimeter extends Activity {
                         float altitude = mSensorManager.getAltitude(currentSeaLevelPressure, event.values[0]) * 3.28084f;
                         if(recordElevationFlag){
                             elevations.add(altitude);
-                            indexCounter++;
                         }
                         mAltimeter.setText(String.valueOf(altitude));
                     }
@@ -106,6 +115,7 @@ public class MyAltimeter extends Activity {
             public void onClick(View view){
                 startButton.setEnabled(false);
                 stopButton.setEnabled(true);
+                heartRateButton.setEnabled(false);
                 recordElevationFlag = true;
             }
         });
@@ -116,7 +126,7 @@ public class MyAltimeter extends Activity {
                 startButton.setEnabled(true);
                 stopButton.setEnabled(false);
                 recordElevationFlag = false;
-
+                heartRateButton.setEnabled(true);
 
                 float[] data = new float[elevations.size()];
                 int i = 0;
@@ -132,7 +142,7 @@ public class MyAltimeter extends Activity {
         heartRateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                heartRateIntent = new Intent();
+                startActivity(heartRateIntent);
             }
         });
 
@@ -188,7 +198,6 @@ public class MyAltimeter extends Activity {
         }
     }
 
-
     @Override
     protected void onResume() {
         // Register a listener for the sensor.
@@ -202,4 +211,37 @@ public class MyAltimeter extends Activity {
         super.onPause();
         mSensorManager.unregisterListener(mSensorEventListener);
     }
+
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//
+//        getMenuInflater().inflate(R.menu.my_altimeter_actions, menu);
+//
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()) {
+//            case R.id.settings:
+//
+//                Settings settings = new Settings();
+//
+//                transaction = manager.beginTransaction();
+//                transaction.replace(R.id.fragmentContainer, settings);
+//                transaction.addToBackStack("settings");
+//                transaction.commit();
+//
+//
+//                return true;
+//
+//            default:
+//                // If we got here, the user's action was not recognized.
+//                // Invoke the superclass to handle it.
+//                return super.onOptionsItemSelected(item);
+//
+//        }
+//
+//
+//    }
 }
