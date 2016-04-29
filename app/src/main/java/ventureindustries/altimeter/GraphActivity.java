@@ -16,7 +16,7 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import java.util.ArrayList;
 
-public class GraphActivty extends Activity {
+public class GraphActivity extends Activity {
 
     public LineChart mLineChart;
     public ArrayList<Entry> entries;
