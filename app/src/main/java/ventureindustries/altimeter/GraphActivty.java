@@ -35,6 +35,7 @@ public class GraphActivty extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_graph_activty);
+        Intent intent = getIntent();
 
         getColorButton = (Button) findViewById(R.id.get_color_button);
 
@@ -45,6 +46,20 @@ public class GraphActivty extends Activity {
         iLineDataSet = new ArrayList<>();
         mLineDataSet = new LineDataSet(entries, "ALTITUDE");
         mLineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+        float[] data = intent.getFloatArrayExtra("altitudes");
+
+        for(int i = 0; i < data.length; i++) {
+            entries.add(new Entry(data[i], i));
+        }
+
+        iLineDataSet.add(0,mLineDataSet);
+        for(int i = 0; i < data.length; i++)
+            mLabels.add(String.valueOf(i));
+
+        mLineData = new LineData(mLabels, iLineDataSet);
+        mLineChart.setData(mLineData);
+        mLineChart.notifyDataSetChanged();
+        mLineChart.invalidate();
 
         getColorButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {

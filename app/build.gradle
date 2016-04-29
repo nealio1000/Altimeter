@@ -54,6 +54,6 @@ dependencies {
     compile 'com.android.support:support-v4:23.+'
 }
 
-//dependencies {
-//    compile 'org.jsoup:jsoup:1.9.1'
-//}
+dependencies {
+    compile 'org.jsoup:jsoup:1.9.1'
+}

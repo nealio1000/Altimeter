@@ -27,8 +27,10 @@ public class MyAltimeter extends Activity {
     private Button startButton;
     private Button stopButton;
     private Button getDataButton;
+    private Button heartRateButton;
     private TextView mAltimeter;
     private TextView readyText;
+    private TextView pressureText;
     private static final String DEBUG_TAG = "DEBUGGER MESSAGE:   ";
     private int red = 0;
     private int green = 0;
@@ -41,6 +43,8 @@ public class MyAltimeter extends Activity {
     public ArrayList<Float> elevations;
     private boolean recordElevationFlag = false;
     private boolean pressureIsCurrent = false;
+    private Intent graphIntent;
+    private Intent heartRateIntent;
 
 
 
@@ -49,12 +53,17 @@ public class MyAltimeter extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_altimeter);
 
+        graphIntent = new Intent(this, GraphActivty.class);
+        heartRateIntent = new Intent(this, HeartRateActivity.class);
+
         startButton = (Button) findViewById(R.id.start_button);
         stopButton = (Button) findViewById(R.id.stop_button);
         getDataButton = (Button)findViewById(R.id.get_data_button);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAltimeter = (TextView) findViewById(R.id.altitudeView);
+        heartRateButton = (Button) findViewById(R.id.heart_rate_button);
         readyText = (TextView) findViewById(R.id.ready_text);
+        pressureText = (TextView) findViewById(R.id.pressure_text);
         startButton.setEnabled(false);
         stopButton.setEnabled(false);
         elevations = new ArrayList<>();
@@ -107,9 +116,25 @@ public class MyAltimeter extends Activity {
                 startButton.setEnabled(true);
                 stopButton.setEnabled(false);
                 recordElevationFlag = false;
+
+
+                float[] data = new float[elevations.size()];
+                int i = 0;
+                for(Float f : elevations){
+                    data[i++] = (f != null ? f : Float.NaN);
+                }
+
+                graphIntent.putExtra("altitudes", data);
+                startActivity(graphIntent);
             }
         });
 
+        heartRateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                heartRateIntent = new Intent();
+            }
+        });
 
     }
 
@@ -159,26 +184,7 @@ public class MyAltimeter extends Activity {
             readyText.setText("READY");
             readyText.setTextColor(Color.rgb(0, 255, 0));
             pressureIsCurrent = true;
-//            mSensorManager.registerListener(mSensorEventListener, mBarometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
-        }
-
-
-
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data){
-        if(resultCode == RESULT_OK && requestCode == 0){
-//            ColorWindow.setBackgroundColor(Color.rgb(data.getIntExtra("red", red),
-//                    data.getIntExtra("green", green), data.getIntExtra("blue", blue)));
-
-            /* Set the line color here */
-
-//            mLineDataSet.setColor(Color.rgb(data.getIntExtra("red", red),
-//                    data.getIntExtra("green", green), data.getIntExtra("blue", blue)));
-            /*                          */
-
-
+            pressureText.setText(String.valueOf(currentSeaLevelPressure));
         }
     }
 
