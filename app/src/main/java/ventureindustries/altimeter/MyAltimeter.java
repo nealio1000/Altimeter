@@ -2,7 +2,6 @@ package ventureindustries.altimeter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -10,22 +9,18 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import java.util.ArrayList;
 
 public class MyAltimeter extends AppCompatActivity implements SensorEventListener{
     private Button get_color_button;
+    private Button startButton;
+    private Button stopButton;
+    private Button getDataButton;
     private TextView mAltimeter;
     private static final String DEBUG_TAG = "DEBUGGER MESSAGE:   ";
     private int red = 0;
@@ -33,32 +28,22 @@ public class MyAltimeter extends AppCompatActivity implements SensorEventListene
     private int blue = 0;
     private SensorManager mSensorManager;
     private Sensor mBarometerSensor;
-//    private LineChart mLineChart;
-//    private ArrayList<Entry> entries;
-//    private ArrayList<ILineDataSet> iLineDataSet;
-//    private ArrayList<Float> mAltitudeData;
-//    private ArrayList<String> mLabels;
-//    private LineDataSet mLineDataSet;
-//    private LineData mLineData;
     private int indexCounter = 1;
-    private long startTimeMs;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        startTimeMs = System.currentTimeMillis();
         setContentView(R.layout.activity_my_altimeter);
+
         get_color_button = (Button) findViewById(R.id.getcolor);
+        startButton = (Button) findViewById(R.id.start_button);
+        stopButton = (Button) findViewById(R.id.stop_button);
+        getDataButton = (Button)findViewById(R.id.get_data_button);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAltimeter = (TextView) findViewById(R.id.altitudeView);
-//        mLineChart = (LineChart) findViewById(R.id.chart);
-//        entries = new ArrayList<>();
-//        mAltitudeData = new ArrayList<>();
-//        mLabels = new ArrayList<>();
-//        iLineDataSet = new ArrayList<>();
-//        mLineDataSet = new LineDataSet(entries, "ALTITUDE");
-//        mLineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+
 
         if (mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE) != null){
             mBarometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
@@ -67,6 +52,22 @@ public class MyAltimeter extends AppCompatActivity implements SensorEventListene
         else {
             Log.d(DEBUG_TAG, "No barometer found");
         }
+
+        startButton.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                startButton.setEnabled(false);
+                stopButton.setEnabled(true);
+            }
+        });
+
+        stopButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startButton.setEnabled(true);
+                stopButton.setEnabled(false);
+            }
+        });
 
 
         get_color_button.setOnClickListener(new Button.OnClickListener() {
@@ -98,6 +99,7 @@ public class MyAltimeter extends AppCompatActivity implements SensorEventListene
         float currentPressure = event.values[0];
         float altitude = mSensorManager.getAltitude(1001.7f, currentPressure) * 3.28084f;
         mAltimeter.setText(String.valueOf(altitude));
+
 
 //        entries.add(new Entry(altitude, indexCounter));
 //        iLineDataSet.add(0, mLineDataSet);
