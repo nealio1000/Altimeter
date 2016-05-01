@@ -25,7 +25,8 @@ public class GraphActivity extends Activity {
     public ArrayList<String> mLabels;
     public LineDataSet mLineDataSet;
     public LineData mLineData;
-    private Button getColorButton;
+    private Button getLineColorButton;
+    private Button getDotColorButton;
     private int red = 0;
     private int green = 0;
     private int blue = 0;
@@ -37,7 +38,8 @@ public class GraphActivity extends Activity {
         setContentView(R.layout.activity_graph_activty);
         Intent intent = getIntent();
 
-        getColorButton = (Button) findViewById(R.id.get_color_button);
+        getLineColorButton = (Button) findViewById(R.id.get_line_color_button);
+        getDotColorButton = (Button) findViewById(R.id.get_dot_color_button);
 
         mLineChart = (LineChart) findViewById(R.id.chart);
         entries = new ArrayList<>();
@@ -58,13 +60,25 @@ public class GraphActivity extends Activity {
 
         mLineData = new LineData(mLabels, iLineDataSet);
         mLineChart.setData(mLineData);
+        mLineChart.setBackgroundColor(Color.rgb(244,244,244));
+        mLineDataSet.setCircleColor(Color.rgb(255, 0, 0));
         mLineChart.notifyDataSetChanged();
         mLineChart.invalidate();
 
-        getColorButton.setOnClickListener(new View.OnClickListener() {
+        mLineDataSet.setColor(Color.rgb(0, 0, 0));
+
+        getLineColorButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent intent = new Intent("ACTION_COLOR");
                 startActivityForResult(intent, 0);
+            }
+        });
+
+        getDotColorButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent("ACTION_COLOR");
+                startActivityForResult(intent, 1);
             }
         });
     }
@@ -72,16 +86,13 @@ public class GraphActivity extends Activity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         if(resultCode == RESULT_OK && requestCode == 0){
-//            ColorWindow.setBackgroundColor(Color.rgb(data.getIntExtra("red", red),
-//                    data.getIntExtra("green", green), data.getIntExtra("blue", blue)));
-
-            /* Set the line color here */
-
             mLineDataSet.setColor(Color.rgb(data.getIntExtra("red", red),
                     data.getIntExtra("green", green), data.getIntExtra("blue", blue)));
-            /*                          */
+        }
 
-
+        if(resultCode == RESULT_OK && requestCode == 1){
+            mLineDataSet.setCircleColor(Color.rgb(data.getIntExtra("red", red),
+                    data.getIntExtra("green", green), data.getIntExtra("blue", blue)));
         }
     }
 }

@@ -11,15 +11,16 @@ import android.widget.RadioButton;
 
 public class SettingsActivity extends Activity {
 
-    private boolean sensorUsed = true;
-    private boolean unitsUsed = true;
+    public static boolean startSensor = true;
+    public  static boolean startUnit = true;
 
 //    View fragmentView;
 
-    private RadioButton gpsCheckBox;
-    private RadioButton barometerCheckBox;
-    private RadioButton feetCheckBox;
-    private RadioButton metersCheckBox;
+    private RadioButton gpsButton;
+    private RadioButton barometerButton;
+    private RadioButton feetButton;
+    private RadioButton metersButton;
+    
     private Button saveButton;
     private boolean[] buttonSettings;
 
@@ -31,17 +32,17 @@ public class SettingsActivity extends Activity {
         setContentView(R.layout.activity_settings);
 
         saveButton = (Button) findViewById(R.id.save_button);
-        gpsCheckBox = (RadioButton) findViewById(R.id.gpsId);
-        barometerCheckBox = (RadioButton) findViewById(R.id.baroId);
-        feetCheckBox = (RadioButton) findViewById(R.id.feetId);
-        metersCheckBox = (RadioButton) findViewById(R.id.metersId);
+        gpsButton = (RadioButton) findViewById(R.id.gpsId);
+        barometerButton = (RadioButton) findViewById(R.id.baroId);
+        feetButton = (RadioButton) findViewById(R.id.feetId);
+        metersButton = (RadioButton) findViewById(R.id.metersId);
 
         buttonSettings[0] = true;
         buttonSettings[1] = true;
-        gpsCheckBox.setChecked(false);
-        barometerCheckBox.setChecked(true);
-        feetCheckBox.setChecked(true);
-        metersCheckBox.setChecked(false);
+        gpsButton.setChecked(false);
+        barometerButton.setChecked(true);
+        feetButton.setChecked(true);
+        metersButton.setChecked(false);
 
         saveButton.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -64,19 +65,19 @@ public class SettingsActivity extends Activity {
         // Check which checkbox was clicked
         switch(view.getId()) {
             case R.id.gpsId:
-                barometerCheckBox.setChecked(false);
+                barometerButton.setChecked(false);
                 buttonSettings[0] = false;
                 break;
             case R.id.baroId:
-                gpsCheckBox.setChecked(false);
+                gpsButton.setChecked(false);
                 buttonSettings[0] = true;
                 break;
             case R.id.feetId:
-                metersCheckBox.setChecked(false);
+                metersButton.setChecked(false);
                 buttonSettings[1] = true;
                 break;
             case R.id.metersId:
-                feetCheckBox.setChecked(false);
+                feetButton.setChecked(false);
                 buttonSettings[1] = false;
                 break;
         }
@@ -85,17 +86,10 @@ public class SettingsActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-
-
-
-        Log.d("DebugJose", "Units used: " + unitsUsed + ", Sensor Used: " + sensorUsed);
-
     }
 
     @Override
     public void onDestroy(){
         super.onDestroy();
-
-
     }
 }

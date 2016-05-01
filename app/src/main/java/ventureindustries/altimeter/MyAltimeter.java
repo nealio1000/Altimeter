@@ -29,8 +29,13 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.Set;
 
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.LatLon;
@@ -56,7 +61,7 @@ public class MyAltimeter extends AppCompatActivity {
     private Intent heartRateIntent;
     private Intent settingsIntent;
     private float unit = 3.28084f;
-    private EGM96 egm96;
+//    private EGM96 egm96;
     private boolean isAltitudeModeGps = false;
     private static final String dataFilePath = "WW15MGH.DAC";
 
@@ -77,79 +82,31 @@ public class MyAltimeter extends AppCompatActivity {
 
     }
 
-    private void initializeBarometer() {
-        if (mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE) != null) {
-            mBarometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
-            Log.d(DEBUG_TAG, "Barometer found");
-            mBarometerEventListener = new SensorEventListener() {
-                @Override
-                public void onSensorChanged(SensorEvent event) {
+    public void appInit() {
 
-                    if(!isAltitudeModeGps) {
+//        try {
+//            egm96 = new EGM96("/storage/emulated/0/Download/WW15MGH.DAC");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
-                        if (pressureIsCurrent) {
-                            float altitude = mSensorManager.getAltitude(currentSeaLevelPressure, event.values[0]) * unit;
-                            if (recordElevationFlag) {
-                                elevations.add(altitude);
-                            }
-                            mAltimeter.setText(String.valueOf(altitude));
-                        }
-                    }
-                }
+        graphIntent = new Intent(this, GraphActivity.class);
+        heartRateIntent = new Intent(this, HeartRateActivity.class);
+        settingsIntent = new Intent(this, SettingsActivity.class);
 
-                @Override
-                public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-                }
-            };
-        } else {
-            Log.d(DEBUG_TAG, "No barometer found");
-        }
-
-
+        startButton = (Button) findViewById(R.id.start_button);
+        stopButton = (Button) findViewById(R.id.stop_button);
+        getDataButton = (Button) findViewById(R.id.get_data_button);
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mAltimeter = (TextView) findViewById(R.id.altitudeView);
+        heartRateButton = (Button) findViewById(R.id.heart_rate_button);
+        readyText = (TextView) findViewById(R.id.ready_text);
+        pressureText = (TextView) findViewById(R.id.pressure_text);
+        startButton.setEnabled(false);
+        stopButton.setEnabled(false);
+        elevations = new ArrayList<>();
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
     }
-
-    public void initializeGps() {
-
-
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-
-                if(isAltitudeModeGps) {
-                    if (isBetterLocation(location, lastKnown)) {
-                        LatLon latLon = LatLon.fromDegrees(location.getLatitude(), location.getLongitude());
-                        double offset = egm96.getOffset(latLon.getLatitude(), latLon.getLongitude());
-
-
-                        if (recordElevationFlag) {
-                            lastKnown = location;
-                        }
-                        mAltimeter.setText(String.valueOf(lastKnown.getAltitude()));
-                    }
-                }
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-            }
-        };
-
-        if (ActivityCompat.checkSelfPermission(
-                getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, locationListener);
-    }
-
 
     public void startButtonListeners() {
         getDataButton.setOnClickListener(new View.OnClickListener() {
@@ -197,29 +154,77 @@ public class MyAltimeter extends AppCompatActivity {
         });
     }
 
-    public void appInit() {
-        try {
-            egm96 = new EGM96(dataFilePath);
-        } catch (IOException e) {
+    private void initializeBarometer() {
+        if (mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE) != null) {
+            mBarometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
+            Log.d(DEBUG_TAG, "Barometer found");
+            mBarometerEventListener = new SensorEventListener() {
+                @Override
+                public void onSensorChanged(SensorEvent event) {
 
+                    if(!isAltitudeModeGps) {
+
+                        if (pressureIsCurrent) {
+                            float altitude = mSensorManager.getAltitude(currentSeaLevelPressure, event.values[0]) * unit;
+                            if (recordElevationFlag) {
+                                elevations.add(altitude);
+                            }
+                            mAltimeter.setText(String.valueOf(altitude));
+                        }
+                    }
+                }
+
+                @Override
+                public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+                }
+            };
+        } else {
+            Log.d(DEBUG_TAG, "No barometer found");
         }
-        graphIntent = new Intent(this, GraphActivity.class);
-        heartRateIntent = new Intent(this, HeartRateActivity.class);
-        settingsIntent = new Intent(this, SettingsActivity.class);
-
-        startButton = (Button) findViewById(R.id.start_button);
-        stopButton = (Button) findViewById(R.id.stop_button);
-        getDataButton = (Button) findViewById(R.id.get_data_button);
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mAltimeter = (TextView) findViewById(R.id.altitudeView);
-        heartRateButton = (Button) findViewById(R.id.heart_rate_button);
-        readyText = (TextView) findViewById(R.id.ready_text);
-        pressureText = (TextView) findViewById(R.id.pressure_text);
-        startButton.setEnabled(false);
-        stopButton.setEnabled(false);
-        elevations = new ArrayList<>();
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
     }
+
+    public void initializeGps() {
+
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+
+                if(isAltitudeModeGps) {
+                    if (isBetterLocation(location, lastKnown)) {
+//                        LatLon latLon = LatLon.fromDegrees(location.getLatitude(), location.getLongitude());
+//                        double offset = egm96.getOffset(latLon.getLatitude(), latLon.getLongitude());
+
+
+                        if (recordElevationFlag) {
+                            float altitude = (float)location.getAltitude() * unit;
+                            elevations.add(altitude);
+                        }
+                        mAltimeter.setText(String.valueOf(location.getAltitude() * unit));
+                    }
+                }
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+            }
+        };
+
+        if (ActivityCompat.checkSelfPermission(
+                getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, locationListener);
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -231,31 +236,26 @@ public class MyAltimeter extends AppCompatActivity {
             boolean isFeetSelected = bundle.getBooleanArray("settings")[1];
 
             if (isBarometerSelected) {
-                mSensorManager.registerListener(mBarometerEventListener, mBarometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
-
-                // Stop GPS
-                if (ActivityCompat.checkSelfPermission(
-                        getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    return;
-                }
-                locationManager.removeUpdates(locationListener);
-
+                SettingsActivity.startSensor = true;
                 isAltitudeModeGps = false;
-            }else{
-                mSensorManager.unregisterListener(mBarometerEventListener);
-                // Start GPS
-                if (ActivityCompat.checkSelfPermission(
-                        getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    return;
+                if(!pressureIsCurrent) {
+                    readyText.setText("NOT READY");
+                    readyText.setTextColor(Color.rgb(255, 0, 0));
+                    startButton.setEnabled(false);
                 }
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, locationListener);
+            }else{
+                SettingsActivity.startSensor = false;
                 isAltitudeModeGps = true;
+                readyText.setText("READY");
+                readyText.setTextColor(Color.rgb(0, 255, 0));
+                startButton.setEnabled(true);
             }
 
             if(isFeetSelected)
                 unit = 3.28084f;
             else
                 unit = 1;
+
         }
     }
 
@@ -313,7 +313,13 @@ public class MyAltimeter extends AppCompatActivity {
     protected void onResume() {
         // Register a listener for the sensor.
         super.onResume();
-//        mSensorManager.registerListener(mBarometerEventListener, mBarometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(mBarometerEventListener, mBarometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, locationListener);
     }
 
     @Override

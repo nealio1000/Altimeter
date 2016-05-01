@@ -1,9 +1,12 @@
-package ventureindustries.altimeter;/*
+package ventureindustries.altimeter;
+/*
  * Copyright (C) 2012 United States Government as represented by the Administrator of the
  * National Aeronautics and Space Administration.
  * All Rights Reserved.
  */
 
+
+import android.app.Activity;
 
 import gov.nasa.worldwind.avlist.*;
 import gov.nasa.worldwind.exception.WWRuntimeException;
@@ -28,7 +31,7 @@ import java.io.*;
  * @author tag
  * @version $Id$
  */
-public class EGM96
+public class EGM96 extends Activity
 {
     protected String offsetsFilePath;
     protected BufferWrapper deltas;
@@ -56,6 +59,7 @@ public class EGM96
     protected void loadOffsetFile() throws IOException
     {
         InputStream is = WWIO.openFileOrResourceStream(this.offsetsFilePath, EGM96.class);
+
         if (is == null)
         {
             String msg = Logging.getMessage("generic.CannotOpenFile", this.offsetsFilePath);
@@ -167,7 +171,7 @@ public class EGM96
 //    {
 //        ventureindustries.altimeter.EGM96 egm96 = new ventureindustries.altimeter.EGM96("config/ventureindustries.altimeter.EGM96.dat");
 //
-        LatLon latLon = LatLon.fromDegrees(46.166195, -94.405447);
+//        LatLon latLon = LatLon.fromDegrees(46.166195, -94.405447);
 ////        double offset = egm96.getOffset(latLon.getLatitude(), latLon.getLongitude());
 ////        double offset = egm96.getOffset(Angle.NEG90, Angle.POS360);
 //        double offset = egm96.getOffset(Angle.fromDegrees(-89.9), Angle.fromDegrees(359.9));
