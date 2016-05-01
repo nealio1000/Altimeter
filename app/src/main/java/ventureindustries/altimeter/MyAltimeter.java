@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -157,7 +158,8 @@ public class MyAltimeter extends AppCompatActivity {
     private void initializeBarometer() {
         if (mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE) != null) {
             mBarometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
-            Log.d(DEBUG_TAG, "Barometer found");
+            Toast yesBarom = Toast.makeText(getApplicationContext(), "Barometer Sensor Found", Toast.LENGTH_LONG);
+            yesBarom.show();
             mBarometerEventListener = new SensorEventListener() {
                 @Override
                 public void onSensorChanged(SensorEvent event) {
@@ -176,11 +178,11 @@ public class MyAltimeter extends AppCompatActivity {
 
                 @Override
                 public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
                 }
             };
         } else {
-            Log.d(DEBUG_TAG, "No barometer found");
+            Toast noBarom = Toast.makeText(getApplicationContext(), "Sorry, this device does not have a barometer. Please select GPS from settings", Toast.LENGTH_LONG);
+            noBarom.show();
         }
     }
 
