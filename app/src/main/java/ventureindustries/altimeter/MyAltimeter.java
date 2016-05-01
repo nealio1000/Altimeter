@@ -30,16 +30,11 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.Set;
-
-import gov.nasa.worldwind.geom.Angle;
-import gov.nasa.worldwind.geom.LatLon;
 
 
 public class MyAltimeter extends AppCompatActivity {
@@ -47,7 +42,7 @@ public class MyAltimeter extends AppCompatActivity {
     private Button stopButton;
     private Button getDataButton;
     private Button heartRateButton;
-    private TextView mAltimeter;
+    private TextView altitudeText;
     private TextView readyText;
     private TextView pressureText;
     private static final String DEBUG_TAG = "DEBUGGER MESSAGE:   ";
@@ -65,6 +60,8 @@ public class MyAltimeter extends AppCompatActivity {
 //    private EGM96 egm96;
     private boolean isAltitudeModeGps = false;
     private static final String dataFilePath = "WW15MGH.DAC";
+    private String FILENAME = "app_data";
+    private FileOutputStream fos;
 
 
     private LocationManager locationManager;
@@ -99,7 +96,7 @@ public class MyAltimeter extends AppCompatActivity {
         stopButton = (Button) findViewById(R.id.stop_button);
         getDataButton = (Button) findViewById(R.id.get_data_button);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mAltimeter = (TextView) findViewById(R.id.altitudeView);
+        altitudeText = (TextView) findViewById(R.id.altitude_text);
         heartRateButton = (Button) findViewById(R.id.heart_rate_button);
         readyText = (TextView) findViewById(R.id.ready_text);
         pressureText = (TextView) findViewById(R.id.pressure_text);
@@ -107,6 +104,8 @@ public class MyAltimeter extends AppCompatActivity {
         stopButton.setEnabled(false);
         elevations = new ArrayList<>();
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+
     }
 
     public void startButtonListeners() {
@@ -125,12 +124,38 @@ public class MyAltimeter extends AppCompatActivity {
                 stopButton.setEnabled(true);
                 heartRateButton.setEnabled(false);
                 recordElevationFlag = true;
+
+                try {
+                    fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                ///////////// Attempting to do persistent storage ////////
+
+                try {
+                    FileInputStream fis = openFileInput("app_data");
+                    Log.d("OUTPUT", String.valueOf(fis.read()));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+                /////////////
+
                 startButton.setEnabled(true);
                 stopButton.setEnabled(false);
                 recordElevationFlag = false;
@@ -170,8 +195,13 @@ public class MyAltimeter extends AppCompatActivity {
                             float altitude = mSensorManager.getAltitude(currentSeaLevelPressure, event.values[0]) * unit;
                             if (recordElevationFlag) {
                                 elevations.add(altitude);
+                                try {
+                                    fos.write(String.valueOf(altitude).getBytes());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
-                            mAltimeter.setText(String.valueOf(altitude));
+                            altitudeText.setText(String.valueOf(altitude));
                         }
                     }
                 }
@@ -194,15 +224,11 @@ public class MyAltimeter extends AppCompatActivity {
 
                 if(isAltitudeModeGps) {
                     if (isBetterLocation(location, lastKnown)) {
-//                        LatLon latLon = LatLon.fromDegrees(location.getLatitude(), location.getLongitude());
-//                        double offset = egm96.getOffset(latLon.getLatitude(), latLon.getLongitude());
-
-
                         if (recordElevationFlag) {
                             float altitude = (float)location.getAltitude() * unit;
                             elevations.add(altitude);
                         }
-                        mAltimeter.setText(String.valueOf(location.getAltitude() * unit));
+                        altitudeText.setText(String.valueOf(location.getAltitude() * unit));
                     }
                 }
             }
@@ -230,6 +256,7 @@ public class MyAltimeter extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        altitudeText.setText("000.0");
 
         if (resultCode == RESULT_OK && requestCode == 0) {
             Bundle bundle = data.getExtras();
@@ -238,7 +265,6 @@ public class MyAltimeter extends AppCompatActivity {
             boolean isFeetSelected = bundle.getBooleanArray("settings")[1];
 
             if (isBarometerSelected) {
-                SettingsActivity.startSensor = true;
                 isAltitudeModeGps = false;
                 if(!pressureIsCurrent) {
                     readyText.setText("NOT READY");
@@ -246,18 +272,18 @@ public class MyAltimeter extends AppCompatActivity {
                     startButton.setEnabled(false);
                 }
             }else{
-                SettingsActivity.startSensor = false;
                 isAltitudeModeGps = true;
                 readyText.setText("READY");
                 readyText.setTextColor(Color.rgb(0, 255, 0));
                 startButton.setEnabled(true);
             }
 
-            if(isFeetSelected)
+            if(isFeetSelected) {
                 unit = 3.28084f;
-            else
+            }
+            else {
                 unit = 1;
-
+            }
         }
     }
 

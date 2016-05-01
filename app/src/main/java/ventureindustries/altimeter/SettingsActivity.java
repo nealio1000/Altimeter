@@ -3,18 +3,11 @@ package ventureindustries.altimeter;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.RadioButton;
 
 public class SettingsActivity extends Activity {
-
-    public static boolean startSensor = true;
-    public  static boolean startUnit = true;
-
-//    View fragmentView;
 
     private RadioButton gpsButton;
     private RadioButton barometerButton;
@@ -59,8 +52,6 @@ public class SettingsActivity extends Activity {
     }
 
     public void onRadioButtonClicked(View view) {
-        // Is the view now checked?
-        boolean checked = ((RadioButton) view).isChecked();
 
         // Check which checkbox was clicked
         switch(view.getId()) {

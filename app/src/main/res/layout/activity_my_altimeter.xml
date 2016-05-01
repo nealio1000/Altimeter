@@ -57,7 +57,7 @@
         android:inputType="numberDecimal"
         android:ems="10"
         android:text="0000.000"
-        android:id="@+id/altitudeView"
+        android:id="@+id/altitude_text"
         android:textSize="30sp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true" />
@@ -76,8 +76,8 @@
         android:layout_height="wrap_content"
         android:text="Check Heart Rate"
         android:id="@+id/heart_rate_button"
-        android:layout_alignBottom="@+id/altitudeView"
-        android:layout_alignEnd="@+id/altitudeView" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignEnd="@+id/stop_button" />
 
     <FrameLayout
         android:layout_width="match_parent"
